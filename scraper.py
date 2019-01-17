@@ -8,22 +8,22 @@ from lxml import html
 from pprint import pprint
 from urllib.parse import unquote, urljoin
 
-top = os.path.abspath(os.path.dirname(__file__))
-
 
 class Scraper:
-	def __init__(self, base_url):
+	def __init__(self, save_location, base_url):
+		self.save_location = save_location
+
 		self.s = requests.session()
 		self.base_url = base_url
-		
+
+		self.tree = None
+		self.path = None
+
 		self.exclude = ["mini_", "normal_", "thumb_"]
 		self.seen = {}
 		
 		self.count = 1
 		self.total = 0
-		
-		self.tree = None
-		self.path = None
 
 	def build_url(self, link):
 		return urljoin(self.base_url, link)
@@ -78,7 +78,7 @@ class Scraper:
 		return links
 
 	def album_page_saved(self, links):
-		path = os.path.join(top, *self.path)
+		path = os.path.join(self.save_location, *self.path)
 		if os.path.isdir(path):
 			os.chdir(path)
 			saved = os.listdir(os.getcwd())
@@ -109,7 +109,7 @@ class Scraper:
 			r = self.s.get(image_url)
 
 			filename = str(self.count).zfill(self.get_album_size()) + "." + links[i].rpartition('.')[2]
-			location = os.path.join(top, *self.path, filename)
+			location = os.path.join(self.save_location, *self.path, filename)
 			
 			print("|   |   |-- saving " + images[i] + " as " + filename)
 			os.makedirs(os.path.dirname(location), exist_ok=True)
@@ -225,12 +225,15 @@ class Scraper:
 
 
 def main():
-	base_url = click.prompt("base_url")
-	scraper = Scraper(base_url)
+	current = os.path.abspath(os.path.dirname(__file__))
+	save_location = click.prompt("save_location", default=current)
 	
+	base_url = click.prompt("base_url")
 	start_url = click.prompt("start_url")
 	ps = click.confirm("ps")
 	
+	scraper = Scraper(save_location, base_url)
+
 	start = time.time()
 	scraper.scrape(start_url, ps=ps)
 	end = time.time() - start
