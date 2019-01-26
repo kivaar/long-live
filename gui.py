@@ -91,7 +91,7 @@ class Window(Tk):
 		scraper = Scraper(save_location, base_url)
 
 		start = time.time()
-		scraper.scrape(start_url, ps=ps)
+		scraper.start(start_url, ps=ps)
 		end = time.time() - start
 
 		print(round(end), "seconds")

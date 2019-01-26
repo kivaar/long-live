@@ -119,7 +119,7 @@ class Scraper:
 			self.count += 1
 			self.total += 1
 
-	def get_album(self, url, title, subtitle):
+	def get_album(self, url, title=None, subtitle=None):
 		self.count = 1
 
 		self.set_html_tree(url)
@@ -223,19 +223,28 @@ class Scraper:
 
 					self.get_album(album_url, album_title, album_subtitle)
 
+	def start(self, start_url, ps=False):
+		if "album" in start_url:
+			self.get_album(start_url)
+		else:
+			self.scrape(start_url, ps)
+
 
 def main():
+	# for f in os.listdir("."):
+	# 	os.remove(f)
+
 	current = os.path.abspath(os.path.dirname(__file__))
 	save_location = click.prompt("save_location", default=current)
-	
+
 	base_url = click.prompt("base_url")
 	start_url = click.prompt("start_url")
 	ps = click.confirm("ps")
-	
+
 	scraper = Scraper(save_location, base_url)
 
 	start = time.time()
-	scraper.scrape(start_url, ps=ps)
+	scraper.start(start_url, ps=ps)
 	end = time.time() - start
 
 	print(round(end), "seconds")
