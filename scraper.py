@@ -45,15 +45,16 @@ class Scraper:
 			.replace("/", " & ") \
 			.replace(":", " -") \
 			.replace("?", "") \
+			.replace("\"", "") \
+			.replace("|", "-") \
 			.replace("’", "'") \
 			.replace("  ", " ") \
-			.replace("\"", "") \
 			.replace("\t", "") \
 			.strip(".") \
 			.strip() for x in temp]
 
 	def get_album_size(self):
-		info = self.tree.xpath('//td[@valign="middle" and @class="tableh1"]/text()')
+		info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
 		if info:
 			items = len(info[0].split()[0])
 			if items < 3:
@@ -62,7 +63,7 @@ class Scraper:
 			return items
 
 	def get_page_count(self):
-		info = self.tree.xpath('//td[@valign="middle" and @class="tableh1"]/text()')
+		info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
 		if info:
 			pages = int(info[0].split()[3])
 			return pages
