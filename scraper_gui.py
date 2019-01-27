@@ -13,7 +13,7 @@ current = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
 
 
 def runner(save_location, start_url, ps):
-	base_url = start_url.rsplit('/', 1)[0]
+	base_url = ''.join(start_url.rpartition('/')[:-1])
 	scraper = Scraper(save_location, base_url)
 
 	start = time.time()
