@@ -37,7 +37,7 @@ class Scraper:
         temp = self.tree.xpath('//td[@class="tableh1"]//a/text()')
 
         if title is not None:
-            temp[-1] = title
+            temp.insert(-1, title)
 
         if subtitle is not None:
             temp[-1] += " - " + subtitle
