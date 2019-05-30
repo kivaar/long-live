@@ -3,6 +3,7 @@ import os
 import re
 import requests
 import time
+import sys
 
 from lxml import html
 from pprint import pprint
@@ -236,12 +237,23 @@ def main():
     # for f in os.listdir("."):
     #     os.remove(f)
 
-    current = os.path.abspath(os.path.dirname(__file__))
-    save_location = click.prompt("save_location", default=current)
+    if len(sys.argv) > 3:
+        save_location = sys.argv[1]
+        base_url = sys.argv[2]
+        start_url = sys.argv[3]
 
-    base_url = click.prompt("base_url")
-    start_url = click.prompt("start_url")
-    ps = click.confirm("ps")
+        if len(sys.argv) > 4:
+            ps = True
+        else:
+            ps = False
+
+    else:
+        current = os.path.abspath(os.path.dirname(__file__))
+        save_location = click.prompt("save_location", default=current)
+
+        base_url = click.prompt("base_url")
+        start_url = click.prompt("start_url")
+        ps = click.confirm("ps")
 
     scraper = Scraper(save_location, base_url)
 
