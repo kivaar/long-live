@@ -2,8 +2,8 @@ import click
 import os
 import re
 import requests
-import time
 import sys
+import time
 
 from lxml import html
 from pprint import pprint
@@ -36,9 +36,11 @@ class Scraper:
 
     def set_page_path(self, title=None, subtitle=None):
         temp = self.tree.xpath('//td[@class="tableh1"]//a/text()')
+        if not temp:
+            temp = self.tree.xpath('//td[@class="statlink"]//a/text()')
 
         if title is not None:
-            temp.insert(-1, title)
+            temp[-1] = title
 
         if subtitle is not None:
             temp[-1] += " - " + subtitle
