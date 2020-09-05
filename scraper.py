@@ -54,25 +54,48 @@ class Scraper:
                      .replace("’", "'")
                      .replace("  ", " ")
                      .replace("\t", "")
-                     .strip(".")
+                     .strip(".")    # comment out for album names that legitimately have this character
                      .strip() for x in temp]
 
     def get_album_size(self):
-        info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
-        if info:
-            items = len(info[0].split()[0])
-            if items < 3:
-                items = 3
+        info = [
+            self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()'),     # old xpath
+            self.tree.xpath('//span[@class="tableh1-small"]//text()')
+        ]
+        for i in info:
+            if i:
+                items = len(i[0].split()[0])
+                if items < 3:
+                    items = 3
 
-            return items
+                return items
+
+        # info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
+        # if info:
+        #     items = len(info[0].split()[0])
+        #     if items < 3:
+        #         items = 3
+        #
+        #     return items
 
     def get_page_count(self):
-        info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
-        if info:
-            pages = int(info[0].split()[3])
-            return pages
-        else:
-            return False
+        info = [
+            self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()'),     # old xpath
+            self.tree.xpath('//span[@class="tableh1-small"]//text()')
+        ]
+        for i in info:
+            if i:
+                pages = int(i[0].split()[3])
+                return pages
+
+        return False
+
+        # info = self.tree.xpath('//td[@class="tableh1" and @valign="middle"]//text()')
+        # if info:
+        #     pages = int(info[0].split()[3])
+        #     return pages
+        # else:
+        #     return False
 
     def get_image_links(self):
         links = self.tree.xpath('//a/img[@class="image thumbnail"]/@src')
@@ -238,6 +261,9 @@ class Scraper:
 def main():
     # for f in os.listdir("."):
     #     os.remove(f)
+
+    print(len(sys.argv))
+    print(str(sys.argv))
 
     if len(sys.argv) > 3:
         save_location = sys.argv[1]
