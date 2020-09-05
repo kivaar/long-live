@@ -13,32 +13,53 @@ current = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
 
 
 def runner(save_location, start_url, ps):
-    base_url = ''.join(start_url.rpartition('/')[:-1])
-    scraper = Scraper(save_location, base_url)
+    if '\n' in start_url:
+        url_list = start_url.split('\n')
+    else:
+        url_list = [start_url]
 
-    start = time.time()
-    scraper.start(start_url, ps=ps)
-    end = time.time() - start
+    for url in url_list:
+        base_url = ''.join(url.rpartition('/')[:-1])
+        scraper = Scraper(save_location, base_url)
 
-    print(round(end), "seconds")
-    print(scraper.total, "images")
+        start = time.time()
+        scraper.start(url, ps=ps)
+        end = time.time() - start
+
+        print(round(end), "seconds")
+        print(scraper.total, "images")
 
 
 @Gooey(
     program_name='long-live',
     program_description='Download gallery images',
+    default_size=(800, 600),
     monospace_display=True,
-    image_dir=os.path.join(current, 'images')
+    image_dir=os.path.join(current, 'images'),
+    navigation='TABBED',
+    requires_shell=False    # https://github.com/chriskiehl/Gooey/issues/499
 )
 def main():
     parser = GooeyParser()
+    subparser = parser.add_subparsers()
 
-    scrape_group = parser.add_argument_group('Scrape Options', gooey_options={'columns': 1})
-    scrape_group.add_argument('URL')
-    scrape_group.add_argument('--ps', action='store_true', help='Contains photoshoots')
+    single = subparser.add_parser('Single')
 
-    save_group = parser.add_argument_group('Save Options', gooey_options={'columns': 1})
-    save_group.add_argument('Destination Folder', widget='DirChooser')
+    single_scrape_group = single.add_argument_group('Scrape Options', gooey_options={'columns': 1})
+    single_scrape_group.add_argument('URL')
+    single_scrape_group.add_argument('--ps', action='store_true', help=' Contains photoshoots')
+
+    single_save_group = single.add_argument_group('Save Options', gooey_options={'columns': 1})
+    single_save_group.add_argument('Destination Folder', widget='DirChooser')
+
+    bulk = subparser.add_parser('Bulk')
+
+    bulk_scrape_group = bulk.add_argument_group('Scrape Options', gooey_options={'columns': 1})
+    bulk_scrape_group.add_argument('URL', widget='Textarea')
+    bulk_scrape_group.add_argument('--ps', action='store_true', help=' All of the URLs above contain photoshoots')
+
+    bulk_save_group = bulk.add_argument_group('Save Options', gooey_options={'columns': 1})
+    bulk_save_group.add_argument('Destination Folder', widget='DirChooser')
 
     args = parser.parse_args()
 
