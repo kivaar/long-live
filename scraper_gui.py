@@ -11,6 +11,13 @@ from scraper import Scraper
 builtins.print = functools.partial(print, flush=True)
 current = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
 
+import codecs
+
+if sys.stdout.encoding != 'UTF-8':
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'UTF-8':
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+
 
 def runner(save_location, start_url, ps):
     if '\n' in start_url:
