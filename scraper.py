@@ -268,7 +268,7 @@ def main():
     print(str(sys.argv))
 
     if len(sys.argv) > 3:
-        save_location = sys.argv[1]
+        save_location = os.path.abspath(sys.argv[1])
         base_url = sys.argv[2]
         start_url = sys.argv[3]
 
